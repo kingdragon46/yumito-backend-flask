@@ -7,6 +7,7 @@ import hashlib
 from flask import request, jsonify
 from bson import ObjectId
 import pytz
+import requests
 local_timezone = pytz.timezone('Asia/Kolkata')
 
 # Load environment variables from the .env file
@@ -147,3 +148,24 @@ def convert_to_json(data):
     json_data = jsonify(converted_data)
 
     return json_data
+
+
+# Create a function to fetch data from the external API
+def fetch_data_from_api(external_api_url):
+    try:
+        response = requests.get(external_api_url)
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        else:
+            return None
+    except Exception as e:
+        print("Error fetching data from API:", str(e))
+        return None
+
+
+def find_key_ignore_case(data, key):
+    for k,v in data.items():
+        if k.lower() == key.lower():
+            return v
+    return None
