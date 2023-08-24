@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# Set execute permission for the script itself
+chmod +x "$0"
+
 # exit on error
 set -o errexit
-
 
 # Get the current directory (your Flask project directory)
 PROJECT_DIR="$(pwd)"
