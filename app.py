@@ -1,10 +1,12 @@
-from flask import Flask, request, jsonify, session, make_response
+import io
+import json
+from flask import Flask, request, jsonify, session, make_response, render_template
 from pymongo import DESCENDING
 import connection
 from dotenv import load_dotenv
-import os, io
+import os
 from flask_session import Session
-
+from flask_restx import Api, Resource
 import qrcode
 from tabulate import tabulate
 from PIL import Image, ImageDraw
@@ -24,6 +26,22 @@ Session(app)
 app.debug=True
 
 SECRET_KEY = os.getenv("SECRET_KEY")  # Secret key for JWT
+
+# Create an instance of the Flask-RESTPlus API
+api = Api(app, version='1.0', title='YumYum', description='food')
+
+# Namespace for your API (you can create multiple namespaces)
+ns = api.namespace('api', description='API operations')
+
+# Sample route with Swagger documentation
+@ns.route('/hello')
+class HelloWorld(Resource):
+    @api.doc(responses={200: 'Success', 400: 'Bad Request'}, description='Get a hello message')
+    def get(self):
+        """
+        Get a hello message.
+        """
+        return {'message': 'Hello, World!'}, 200
 
 # Configure the Flask app to use a session with a specific session type
 
@@ -175,23 +193,12 @@ def clear_session():
     session.clear()  # Clears all data in the session
     return f'Session cleared'
 
+
 @app.route('/table_of_contents', methods=['GET'])
 def table_of_contents():
-    # You can load the HTML file here and return it as a response
-    with open('qr_response.html', 'r') as html_file:
-        html_content = html_file.read()
-    
-    return html_content, 200, {'Content-Type': 'text/html'}
-
-@app.route('/generate_qr_code', methods=['GET'])
-def generate_qr_code():
-    # Fetch data from the external API
-    # Connect to MongoDB
+    # Connect to MongoDB and retrieve the data
     db = connection.connect_to_mongodb()
-
-    # Retrieve all data from the MongoDB collection
     data = connection.get_all_data(db)
-    print("data: ", data)
 
     if data is not None:
         # Extracting relevant data and creating a table
@@ -206,43 +213,44 @@ def generate_qr_code():
                 item["price"],
             ])
 
-        # Define table headers
-        headers = ["ID", "Name", "Calories", "Description", "Ingredients", "Price"]
-
-        # Generate the table as a string
-        table_str = tabulate(table_data, headers, tablefmt="grid")
-
-        # Create a QR code that links to the table_of_contents route
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        
-        # Construct the URL for the table_of_contents route
-        table_of_contents_url = request.url_root + 'table_of_contents'
-        
-        # Add the URL to the QR code
-        qr.add_data(table_of_contents_url)
-        qr.make(fit=True)
-
-        # Create an Image object from the QR code
-        img = qr.make_image(fill_color="black", back_color="white")
-
-        # Save the QR code as an image (you can also return it directly in the response)
-        img_buffer = io.BytesIO()
-        img.save(img_buffer, format="PNG")
-
-        # Create a Flask response with the image data and set the content type
-        response = make_response(img_buffer.getvalue())
-        response.headers["Content-Type"] = "image/png"
-
-        return response, 200
-
+        # Render the template and pass the table data to it
+        return render_template('qr_response.html', table_data=table_data)
     else:
         return jsonify({"error": "Failed to fetch data from the external API"}), 500
+
+@app.route('/generate_qr_code', methods=['GET'])
+def generate_qr_code():
+    # Create a QR code that links to the table_of_contents route
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+
+    # Construct the URL for the table_of_contents route
+    table_of_contents_url = request.url_root + 'table_of_contents'
+
+    # Add the URL to the QR code
+    qr.add_data(table_of_contents_url)
+    qr.make(fit=True)
+
+    # Create an Image object from the QR code
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Save the QR code as an image (you can also return it directly in the response)
+    img_buffer = io.BytesIO()
+    img.save(img_buffer, format="PNG")
+
+    # Create a Flask response with the image data and set the content type
+    response = make_response(img_buffer.getvalue())
+    response.headers["Content-Type"] = "image/png"
+
+    return response, 200
+
+
 
 
 if __name__ == '__main__':
     app.run()
+
