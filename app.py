@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, session, make_response
 from pymongo import DESCENDING
 import connection
 from dotenv import load_dotenv
-import os
+import os, io
 from flask_session import Session
 
 import qrcode
