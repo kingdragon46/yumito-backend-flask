@@ -22,4 +22,4 @@ python -m pip install --upgrade pip
 pip install -r "$PROJECT_DIR/requirements1.txt"
 
 # Run the Flask application using Gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app2:app2
+# gunicorn -w 4 -b 0.0.0.0:8000 app2:app2
