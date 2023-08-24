@@ -3,22 +3,9 @@
 # Set execute permission for this script
 chmod +x "$0"
 
-# Step 1: Update and upgrade packages using sudo
-echo "Step 1: Updating and upgrading packages..."
-sudo apt-get update
-sudo apt-get upgrade -y
-echo "Step 1 complete."
-
-# Step 2: Reboot the server to address read-only filesystem issues
-echo "Step 2: Rebooting the server..."
-sudo reboot
-
-# Set execute permission for the script itself
-chmod +x "$0"
-
 # Update Python (assuming you're using apt-get)
-apt-get update
-apt-get install --only-upgrade python3
+# sudo apt-get update  # This line requires root access
+# sudo apt-get install --only-upgrade python3  # This line requires root access
 
 # exit on error
 set -o errexit
