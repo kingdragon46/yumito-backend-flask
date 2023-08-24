@@ -6,7 +6,7 @@ import connection
 from dotenv import load_dotenv
 import os
 from flask_session import Session
-# from flask_restx import Api, Resource
+from flask_restx import Api, Resource
 import qrcode
 from tabulate import tabulate
 from PIL import Image, ImageDraw
@@ -28,20 +28,20 @@ app.debug=True
 SECRET_KEY = os.getenv("SECRET_KEY")  # Secret key for JWT
 
 # Create an instance of the Flask-RESTPlus API
-# api = Api(app, version='1.0', title='YumYum', description='food')
+api = Api(app, version='1.0', title='YumYum', description='food')
 
-# # Namespace for your API (you can create multiple namespaces)
-# ns = api.namespace('api', description='API operations')
+# Namespace for your API (you can create multiple namespaces)
+ns = api.namespace('api', description='API operations')
 
-# # Sample route with Swagger documentation
-# @ns.route('/hello')
-# class HelloWorld(Resource):
-#     @api.doc(responses={200: 'Success', 400: 'Bad Request'}, description='Get a hello message')
-#     def get(self):
-#         """
-#         Get a hello message.
-#         """
-#         return {'message': 'Hello, World!'}, 200
+# Sample route with Swagger documentation
+@ns.route('/hello')
+class HelloWorld(Resource):
+    @api.doc(responses={200: 'Success', 400: 'Bad Request'}, description='Get a hello message')
+    def get(self):
+        """
+        Get a hello message.
+        """
+        return {'message': 'Hello, World!'}, 200
 
 # Configure the Flask app to use a session with a specific session type
 
@@ -204,14 +204,28 @@ def table_of_contents():
         # Extracting relevant data and creating a table
         table_data = []
         for item in data:
-            table_data.append([
-                item["_id"],
-                item["name"],
-                item["calories"],
-                item["description"],
-                "\n".join(item["ingredients"]),
-                item["price"],
-            ])
+            # Check if the "_id" field exists, otherwise use None
+            _id = find_key_ignore_case(item,"_id")
+
+            # Check if the "name" field exists, otherwise use None
+            name = find_key_ignore_case(item,"name")
+
+            # Check if the "calories" field exists, otherwise use None
+            calories = find_key_ignore_case(item,"calories")
+
+            # Check if the "description" field exists, otherwise use None
+            description = find_key_ignore_case(item,"description")
+
+            # Check if the "ingredients" field exists, otherwise use None
+            ingredients = find_key_ignore_case(item, "ingredients")
+            # ingredients = "\n".join(item[ingredients_key]) if ingredients_key else None
+
+
+            # Check if the "price" field exists, otherwise use None
+            price = find_key_ignore_case(item,"price")
+
+            table_data.append([_id, name, calories, description, ingredients, price])
+
 
         # Render the template and pass the table data to it
         return render_template('qr_response.html', table_data=table_data)
@@ -253,4 +267,3 @@ def generate_qr_code():
 
 if __name__ == '__main__':
     app.run()
-
