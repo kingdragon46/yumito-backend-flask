@@ -23,6 +23,9 @@ source "$PROJECT_DIR/venv/bin/activate"
 
 echo "Env activated"
 
+# Navigate to your Flask project directory
+cd $PROJECT_DIR
+
 # Upgrade pip
 python -m pip install --upgrade pip
 
