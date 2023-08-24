@@ -34,6 +34,8 @@ fi
 # Activate the virtual environment
 source "$PROJECT_DIR/venv/bin/activate"
 
+echo "Env activated"
+
 # Upgrade pip
 python -m pip install --upgrade pip
 
