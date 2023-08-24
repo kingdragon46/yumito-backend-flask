@@ -3,6 +3,10 @@
 # Set execute permission for the script itself
 chmod +x "$0"
 
+# Update Python (assuming you're using apt-get)
+apt-get update
+apt-get install --only-upgrade python3
+
 # exit on error
 set -o errexit
 
