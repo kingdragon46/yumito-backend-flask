@@ -33,6 +33,4 @@ pip install --upgrade pip
 # Install project dependencies from requirements.txt
 pip install -r "$requirements_txt"
 
-# Run the Flask application using Gunicorn
-# Adjust the following line to match your Flask app's entry point
-# gunicorn -w 4 -b 0.0.0.0:8000 app2:app2
+# Note: No Gunicorn command here, this script is for setup only
