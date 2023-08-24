@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Check if the script is run as root (superuser)
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root (use sudo)." 
-   exit 1
-fi
-
 # Set execute permission for this script
 chmod +x "$0"
 
