@@ -23,6 +23,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")  # Secret key for JWT
 
 # Configure the Flask app to use a session with a specific session type
 
+# Hello World
+@app.route('/', methods=['GET'])
+def hello_world():
+    try:
+        return jsonify({"res": "Hello World"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Register User
 @app.route('/register', methods=['POST'])
 def register():
