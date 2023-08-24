@@ -6,7 +6,7 @@ import connection
 from dotenv import load_dotenv
 import os
 from flask_session import Session
-from flask_restx import Api, Resource
+# from flask_restx import Api, Resource
 import qrcode
 from tabulate import tabulate
 from PIL import Image, ImageDraw
