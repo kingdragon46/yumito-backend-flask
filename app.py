@@ -28,20 +28,20 @@ app.debug=True
 SECRET_KEY = os.getenv("SECRET_KEY")  # Secret key for JWT
 
 # Create an instance of the Flask-RESTPlus API
-api = Api(app, version='1.0', title='YumYum', description='food')
+# api = Api(app, version='1.0', title='YumYum', description='food')
 
-# Namespace for your API (you can create multiple namespaces)
-ns = api.namespace('api', description='API operations')
+# # Namespace for your API (you can create multiple namespaces)
+# ns = api.namespace('api', description='API operations')
 
-# Sample route with Swagger documentation
-@ns.route('/hello')
-class HelloWorld(Resource):
-    @api.doc(responses={200: 'Success', 400: 'Bad Request'}, description='Get a hello message')
-    def get(self):
-        """
-        Get a hello message.
-        """
-        return {'message': 'Hello, World!'}, 200
+# # Sample route with Swagger documentation
+# @ns.route('/hello')
+# class HelloWorld(Resource):
+#     @api.doc(responses={200: 'Success', 400: 'Bad Request'}, description='Get a hello message')
+#     def get(self):
+#         """
+#         Get a hello message.
+#         """
+#         return {'message': 'Hello, World!'}, 200
 
 # Configure the Flask app to use a session with a specific session type
 
