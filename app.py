@@ -1,9 +1,13 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, make_response
 from pymongo import DESCENDING
 import connection
 from dotenv import load_dotenv
 import os
 from flask_session import Session
+
+import qrcode
+from tabulate import tabulate
+from PIL import Image, ImageDraw
 
 from utils import *
 
@@ -170,6 +174,75 @@ def clear_session():
 
     session.clear()  # Clears all data in the session
     return f'Session cleared'
+
+@app.route('/table_of_contents', methods=['GET'])
+def table_of_contents():
+    # You can load the HTML file here and return it as a response
+    with open('html/qr_response.html', 'r') as html_file:
+        html_content = html_file.read()
+    
+    return html_content, 200, {'Content-Type': 'text/html'}
+
+@app.route('/generate_qr_code', methods=['GET'])
+def generate_qr_code():
+    # Fetch data from the external API
+    # Connect to MongoDB
+    db = connection.connect_to_mongodb()
+
+    # Retrieve all data from the MongoDB collection
+    data = connection.get_all_data(db)
+    print("data: ", data)
+
+    if data is not None:
+        # Extracting relevant data and creating a table
+        table_data = []
+        for item in data:
+            table_data.append([
+                item["_id"],
+                item["name"],
+                item["calories"],
+                item["description"],
+                "\n".join(item["ingredients"]),
+                item["price"],
+            ])
+
+        # Define table headers
+        headers = ["ID", "Name", "Calories", "Description", "Ingredients", "Price"]
+
+        # Generate the table as a string
+        table_str = tabulate(table_data, headers, tablefmt="grid")
+
+        # Create a QR code that links to the table_of_contents route
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        
+        # Construct the URL for the table_of_contents route
+        table_of_contents_url = request.url_root + 'table_of_contents'
+        
+        # Add the URL to the QR code
+        qr.add_data(table_of_contents_url)
+        qr.make(fit=True)
+
+        # Create an Image object from the QR code
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        # Save the QR code as an image (you can also return it directly in the response)
+        img_buffer = io.BytesIO()
+        img.save(img_buffer, format="PNG")
+
+        # Create a Flask response with the image data and set the content type
+        response = make_response(img_buffer.getvalue())
+        response.headers["Content-Type"] = "image/png"
+
+        return response, 200
+
+    else:
+        return jsonify({"error": "Failed to fetch data from the external API"}), 500
+
 
 if __name__ == '__main__':
     app.run()
