@@ -17,4 +17,4 @@ source "$PROJECT_DIR/venv/bin/activate"
 
 # Run the Flask application using Gunicorn
 # Adjust the following line to match your Flask app's entry point
-gunicorn -w 4 -b 0.0.0.0:8000 app2:app2
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
