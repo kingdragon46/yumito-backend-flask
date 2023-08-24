@@ -178,7 +178,7 @@ def clear_session():
 @app.route('/table_of_contents', methods=['GET'])
 def table_of_contents():
     # You can load the HTML file here and return it as a response
-    with open('html/qr_response.html', 'r') as html_file:
+    with open('qr_response.html', 'r') as html_file:
         html_content = html_file.read()
     
     return html_content, 200, {'Content-Type': 'text/html'}
