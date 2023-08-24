@@ -88,8 +88,8 @@ def login():
 # -------------------------------------------------------------------------------------
 # Endpoint to add a food item (requires a valid JWT token)
 @app.route('/add_food', methods=['POST'])
-@requires_auth
-def add_food(email):
+# @requires_auth
+def add_food(*args,**kwargs):
     try:
         # Connect to MongoDB
         db = connection.connect_to_mongodb()
@@ -98,8 +98,8 @@ def add_food(email):
         data = request.json
         user_id = session.get('email')
 
-        if user_id != email:
-            return  jsonify({"message": "Wrong token with wrong session"}), 404
+        # if user_id != email:
+        #     return  jsonify({"message": "Wrong token with wrong session"}), 404
 
         # Insert the food item into the MongoDB collection
         data['user_id'] = user_id
@@ -114,7 +114,7 @@ def add_food(email):
 # -----------------------------------------------------------------
 # Endpoint to retrieve all data from MongoDB
 @app.route('/get_all_data', methods=['GET'])
-@requires_auth
+# @requires_auth
 def get_all_data(*args,**kwargs):
     try:
         # Connect to MongoDB
@@ -131,7 +131,7 @@ def get_all_data(*args,**kwargs):
 # ----------------------------------------------------------------
 # Endpoint to retrieve user data from MongoDB
 @app.route('/get_user_data', methods=['GET'])
-@requires_auth
+# @requires_auth
 def get_data_by_user_id_sorted_by_created_at(*args,**kwargs):
     # Connect to MongoDB
     db = connection.connect_to_mongodb()
