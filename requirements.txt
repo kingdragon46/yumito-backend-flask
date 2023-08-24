@@ -1,6 +1,7 @@
 bcrypt
 Flask
 Flask-Session
+flask-restx
 gunicorn
 PyJWT
 pymongo
